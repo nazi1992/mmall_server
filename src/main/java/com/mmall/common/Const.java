@@ -19,7 +19,10 @@ public class Const {
         int ROLE_CUSTOMER = 0;//普通用户
         int ROLE_ADMIN = 1;//管理员
     }
-
+    public interface  Cart{
+        int CHECK = 0;//购物车选中状态
+        int NOT_CHECK =1;//购物车未选中状态
+    }
     public interface ProductListOrderBy{
         Set<String> PRICE_ASC_DESC = Sets.newHashSet("price_desc","price_asc");
     }
