@@ -26,6 +26,16 @@ public class CartProductVo {
 
     private  Integer totalQuantity;
 
+    private String limitQutity;
+
+    public String getLimitQutity() {
+        return limitQutity;
+    }
+
+    public void setLimitQutity(String limitQutity) {
+        this.limitQutity = limitQutity;
+    }
+
     public Integer getId() {
         return id;
     }

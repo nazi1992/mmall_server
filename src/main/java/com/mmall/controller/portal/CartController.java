@@ -5,7 +5,9 @@ import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.dao.CartMapper;
 import com.mmall.pojo.User;
+import com.mmall.service.CartService;
 import com.mmall.service.IProductService;
+import com.mmall.vo.CartVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,11 +30,12 @@ public class CartController {
     //根据关键字查询或者id查询产品
     @RequestMapping(value="/add.do",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse getProductList(HttpSession httpSession,String productId,int count){
+    public ServerResponse<CartVo> getProductList(HttpSession httpSession, Integer productId, int count){
         User user = (User) httpSession.getAttribute(Const.CURRENT_USER);
         if(user==null)
         {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
+        return cartService.add(user.getId(),productId,count);
     }
 }

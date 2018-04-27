@@ -22,6 +22,8 @@ public class Const {
     public interface  Cart{
         int CHECK = 0;//购物车选中状态
         int NOT_CHECK =1;//购物车未选中状态
+        String STOCK_LIMIT_SUCCESS = "STOCK_LIMIT_SUCCESS";
+        String STOCK_LIMIT_FAIL = "STOCK_LIMIT_FAIL";
     }
     public interface ProductListOrderBy{
         Set<String> PRICE_ASC_DESC = Sets.newHashSet("price_desc","price_asc");
