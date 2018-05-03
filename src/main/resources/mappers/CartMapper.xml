@@ -125,7 +125,7 @@
     where user_id = #{userId} and product_id = #{productId}
 
   </select>
-  <select id="selectCartByUserId" resultType="map">
+  <select id="selectCartByUserId" resultMap="BaseResultMap" parameterType="int">
      SELECT
      <include refid="Base_Column_List"></include>
     from mmall_cart
@@ -134,5 +134,32 @@
   </select>
   <select id="checkProductStatusByUserId" parameterType="int" resultType="int">
     SELECT count(1) from mmall_cart where check =0 and user_id = #{userId}
+  </select>
+
+  <delete id="deleteByUserIdProductId" parameterType="map">
+    DELETE  FROM mmall_cart
+    where user_id = #{userId}
+
+    <if test="productIds != null">
+        and product_id in
+      <foreach collection="productIds" index="index" item="item" open="(" separator="," close=")">
+          #{item}
+      </foreach>
+    </if>
+
+  </delete>
+
+  <update id="updateCheckByUserId" parameterType="map">
+    UPDATE  FROM mmall_cart
+    SET checked=#{checked},
+    update_time = now()
+    where user_id = #{userId}
+    <if test="productId !=null">
+       and product_id = #{productId}
+    </if>
+  </update>
+
+  <select id="selectCartProductCount" parameterType="int" resultType="int">
+    SELECT IFNULL(sum(quantity)) from mmall_cart where user_id = #{userId}
   </select>
 </mapper>
