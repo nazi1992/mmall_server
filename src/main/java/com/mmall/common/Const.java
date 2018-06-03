@@ -28,4 +28,31 @@ public class Const {
     public interface ProductListOrderBy{
         Set<String> PRICE_ASC_DESC = Sets.newHashSet("price_desc","price_asc");
     }
+    public enum OrderStatusEnum
+    {
+        CANCEL(0,"已取消"),
+        NO_PAY(20,"未支付"),
+        PAID(40,"已付款"),
+        SHIPPED(50,"已发货"),
+        ORDER_SUCCESS(60,"订单完成"),
+        ORDER_CLOSE(1,"订单关闭");
+
+
+        private int code;
+        private String desc;
+
+        OrderStatusEnum(int code, String desc) {
+            this.code = code;
+            this.desc = desc;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+        public int getCode() {
+            return code;
+        }
+
+
+    }
 }
