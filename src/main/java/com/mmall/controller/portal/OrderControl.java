@@ -88,7 +88,7 @@ public class OrderControl {
         return Const.AlipayCallback.RESPONSE_FAILED;
     }
 
-    public ServerResponse<Boolean> queryOrderPayStatus(HttpSession session, Long orderNo)
+    public ServerResponse<Boolean> queryOrderPayStatus(HttpSession session,Long orderNo)
     {
         User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
         if (currentUser == null) {
