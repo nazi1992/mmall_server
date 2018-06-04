@@ -16,10 +16,13 @@ import com.mmall.common.Const;
 import com.mmall.common.ServerResponse;
 import com.mmall.dao.OrderItemMapper;
 import com.mmall.dao.OrderMapper;
+import com.mmall.dao.PayInfoMapper;
 import com.mmall.pojo.Order;
 import com.mmall.pojo.OrderItem;
+import com.mmall.pojo.PayInfo;
 import com.mmall.service.IOrderService;
 import com.mmall.util.BigdelcimalUtil;
+import com.mmall.util.DateTimeUtil;
 import com.mmall.util.FtpUtil;
 import com.mmall.util.PropertiesUtil;
 import org.apache.commons.lang.StringUtils;
@@ -44,6 +47,8 @@ public class IOrderServiceImpl implements IOrderService {
         private OrderMapper orderMapper;
         @Autowired
         private OrderItemMapper orderItemMapper;
+        @Autowired
+        private PayInfoMapper payInfoMapper;
         public ServerResponse pay(Integer userId,Long orderNo,String path)
         {
             Map<String,String> map = Maps.newHashMap();
@@ -188,6 +193,9 @@ public class IOrderServiceImpl implements IOrderService {
     }
     public ServerResponse alipayBack(Map<String,String> params)
     {
+        /**
+         * 几种交易状态都会进入到回调函数里
+         */
         Long orderNo = Long.parseLong(params.get("out_trade_no"));///订单号
         String tradeNo = params.get("trade_no");//交易号
         String trade_status= params.get("trade_status");//交易状态
@@ -200,5 +208,34 @@ public class IOrderServiceImpl implements IOrderService {
         {
             return ServerResponse.createBySuccess("支付宝重复调用");//返回一个成功的标识，避免前端重复调用接口
         }
+        if(Const.AlipayCallback.TRADE_STATUS_TRADE_SUCCESS.equals(trade_status))
+        {
+            order.setPaymentTime(DateTimeUtil.strToTime(params.get("gmt_payment")));//更新交易时间
+            order.setStatus(Const.OrderStatusEnum.PAID.getCode());
+            orderMapper.updateByPrimaryKeySelective(order);//更新订单，状态改为已付款
+        }
+        PayInfo payInfo = new PayInfo();
+        payInfo.setUserId(order.getUserId());
+        payInfo.setOrderNo(order.getOrderNo());
+        payInfo.setPayPlatform(Const.PayPlatformEnum.ALIPAY.getCode());//支付形式
+        payInfo.setPlatformNumber(tradeNo);//交易号
+        payInfo.setPlatformStatus(trade_status);
+        payInfoMapper.insert(payInfo);
+        return ServerResponse.createBySuccess();//返回前端回调的结果
+
+    }
+    public ServerResponse queryOrderPayStatus(Integer userId,Long orderNo)
+    {
+        Order order = orderMapper.selectByUserIdAndOrderNo(userId,orderNo);
+        if(order==null)
+        {
+            return ServerResponse.createByError("用户没有该订单");
+
+        }
+        if(order.getStatus()>=Const.OrderStatusEnum.SHIPPED.getCode())
+        {
+            return ServerResponse.createBySuccess();
+        }
+        return ServerResponse.createByError();
     }
 }

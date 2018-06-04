@@ -79,5 +79,26 @@ public class OrderControl {
 
 
         //todo　还需要验证各种数据
+
+        ServerResponse serverResponse = iOrderService.alipayBack(localMap);
+        if(serverResponse.isSuccess())
+        {
+            return Const.AlipayCallback.RESPONSE_SUCCESS;
+        }
+        return Const.AlipayCallback.RESPONSE_FAILED;
+    }
+
+    public ServerResponse<Boolean> queryOrderPayStatus(HttpSession session, Long orderNo)
+    {
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null) {
+            return ServerResponse.createBySuccessMessage("用户未登录，无法获取当前信息");
+        }
+        ServerResponse serverResponse = iOrderService.queryOrderPayStatus(currentUser.getId(),orderNo);
+        if(serverResponse.isSuccess())
+        {
+            return ServerResponse.createBySuccess(true);
+        }
+        return ServerResponse.createBySuccess(false);
     }
 }
