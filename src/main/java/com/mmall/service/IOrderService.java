@@ -11,4 +11,7 @@ public interface IOrderService {
     ServerResponse pay(Integer userId, Long orderNo, String path);
     ServerResponse alipayBack(Map<String,String> params);
     ServerResponse queryOrderPayStatus(Integer userId,Long orderNo);
+    ServerResponse create(Integer userId,Integer shippingId);
+    ServerResponse cancel(Integer userId,Long orderNo);
+    ServerResponse getOrderCartProduct(Integer  userId);
 }

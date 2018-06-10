@@ -213,6 +213,8 @@
     SELECT
     <include refid="Base_Column_List"></include>
     form mmall_order
-    and  order_no = #{orderNo}
+    where  order_no = #{orderNo}
   </select>
+
+
 </mapper>

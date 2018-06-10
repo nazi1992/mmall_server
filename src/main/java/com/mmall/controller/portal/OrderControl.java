@@ -1,10 +1,12 @@
 package com.mmall.controller.portal;
 
+
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.demo.trade.config.Configs;
 import com.google.common.collect.Maps;
 import com.mmall.common.Const;
+import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
 import com.mmall.service.IOrderService;
@@ -30,6 +32,62 @@ public class OrderControl {
     private Logger logger = LoggerFactory.getLogger(OrderControl.class);
     @Autowired
     private IOrderService iOrderService;
+
+    @RequestMapping("create.do")
+    @ResponseBody
+     public ServerResponse createOrder(HttpSession session,Integer shippingId) {
+        /**
+         * 创建订单
+         */
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
+        }
+
+       return iOrderService.create(currentUser.getId(),shippingId);
+    }
+
+    /**
+     * 取消订单
+     * @param session
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping("cancel.do")
+    @ResponseBody
+    public ServerResponse cancelOrder(HttpSession session,Long orderNo) {
+        /**
+         * 取消订单
+         */
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
+        }
+
+        return iOrderService.cancel(currentUser.getId(),orderNo);
+    }
+
+    /**
+     * 查询订单中某一商品详情
+     * @param session
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping("getOrderCartProduct.do")
+    @ResponseBody
+    public ServerResponse getOrderCartProduct(HttpSession session,Long orderNo) {
+        /**
+         * 取消订单
+         */
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
+        }
+
+        return iOrderService.getOrderCartProduct(currentUser.getId());
+    }
+
+
 
     @RequestMapping("pay.do")
     @ResponseBody
