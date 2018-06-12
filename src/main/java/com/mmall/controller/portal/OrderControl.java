@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -86,7 +87,25 @@ public class OrderControl {
 
         return iOrderService.getOrderCartProduct(currentUser.getId());
     }
+    @RequestMapping("detail.do")
+    @ResponseBody
+    public ServerResponse detail(HttpSession session,Long orderNo){
+        User user = (User)session.getAttribute(Const.CURRENT_USER);
+        if(user ==null){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
+        }
+        return iOrderService.getOrderDetail(user.getId(),orderNo);
+    }
 
+    @RequestMapping("list.do")
+    @ResponseBody
+    public ServerResponse list(HttpSession session, @RequestParam(value = "pageNum",defaultValue = "1") int pageNum, @RequestParam(value = "pageSize",defaultValue = "10") int pageSize){
+        User user = (User)session.getAttribute(Const.CURRENT_USER);
+        if(user ==null){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
+        }
+        return iOrderService.getOrderList(user.getId(),pageNum,pageSize);
+    }
 
 
     @RequestMapping("pay.do")
@@ -103,7 +122,8 @@ public class OrderControl {
         String path = request.getSession().getServletContext().getRealPath("upload");
         return iOrderService.pay(currentUser.getId(), orderNo, path);
     }
-
+    @RequestMapping("alipay_callback.do")
+    @ResponseBody
     public Object alipayCallback(HttpServletRequest request)//只接受一个request，因为支付宝吧所有的数据全部放在了http中
     {
         Map map = request.getParameterMap();
@@ -145,7 +165,8 @@ public class OrderControl {
         }
         return Const.AlipayCallback.RESPONSE_FAILED;
     }
-
+    @RequestMapping("check_status.do")
+    @ResponseBody
     public ServerResponse<Boolean> queryOrderPayStatus(HttpSession session,Long orderNo)
     {
         User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
